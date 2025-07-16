@@ -2,10 +2,11 @@ import { Request, Response } from "express";
 import { getRepository, Not } from "typeorm";
 import { Student } from "../entities/Student";
 import { Teacher } from "../entities/Teacher";
+import { AppDataSource } from "../database/data-source";
 
 class TeacherController {
   async index(request: Request, response: Response) {
-    const repository = getRepository(Teacher);
+    const repository = AppDataSource.getRepository(Teacher);
     const teachers = await repository.find();
 
     return response.json(teachers);
@@ -13,7 +14,7 @@ class TeacherController {
 
   async find(request: Request, response: Response) {
     const { id } = request.params;
-    const repository = getRepository(Teacher);
+    const repository = AppDataSource.getRepository(Teacher);
     const teacher = await repository.findOne({
       where: { id: Number(id) },
       relations: ["students"],
@@ -28,8 +29,8 @@ class TeacherController {
   async find2(request: Request, response: Response) {
     const { id } = request.params;
 
-    const teacherRepository = getRepository(Teacher);
-    const studentRepository = getRepository(Student);
+    const teacherRepository = AppDataSource.getRepository(Teacher);
+    const studentRepository = AppDataSource.getRepository(Student);
 
     const teacher = await teacherRepository.findOne({
       where: { id: Number(id) },
@@ -39,29 +40,28 @@ class TeacherController {
       return response.status(400).json({ error: "teacher not found!" });
     }
 
-    // Chỉ lấy danh sách ID sản phẩm
-    const productIds = await studentRepository.find({
+    const teacherIds = await studentRepository.find({
       where: { teacher: { id: Number(id) } },
       select: ["id"],
     });
 
-    // Lấy ra mảng id từ danh sách product
-    const productIdList = productIds.map((p) => p.id);
+    // Lấy ra mảng id từ danh sách teacher
+    const teacherIdList = teacherIds.map((p) => p.id);
 
     return response.json({
       teacher,
-      products: productIdList, // chỉ trả về mảng id
+      teachers: teacherIdList, // chỉ trả về mảng id
     });
   }
 
   async create(request: Request, response: Response) {
-    const { name, email } = request.body;
-    const repository = getRepository(Teacher);
+    const { name, email, phone_number } = request.body;
+    const repository = AppDataSource.getRepository(Teacher);
 
     if (await repository.findOne({ where: { email } }))
       return response.status(400).json({ error: "Email already exists!" });
 
-    const teacher = repository.create({ name, email });
+    const teacher = new Teacher(name, email, phone_number);
 
     await repository.save(teacher);
 
@@ -71,7 +71,7 @@ class TeacherController {
   async update(request: Request, response: Response) {
     const { id } = request.params;
     const { name, email } = request.body;
-    const repository = getRepository(Teacher);
+    const repository = AppDataSource.getRepository(Teacher);
     const teacher = await repository.findOne({
       where: { id: Number(id) },
     });
@@ -100,7 +100,7 @@ class TeacherController {
 
   async delete(request: Request, response: Response) {
     const { id } = request.params;
-    const repository = getRepository(Teacher);
+    const repository = AppDataSource.getRepository(Teacher);
 
     if (
       !(await repository.findOne({

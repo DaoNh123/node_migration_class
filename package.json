@@ -4,10 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "typeorm": "ts-node ./node_modules/typeorm/cli",
-    "migration:generate": "yarn typeorm migration:generate -d src/database/data-source.ts src/database/migration/Init",
-    "migration:run": "yarn typeorm migration:run -d src/database/data-source.ts",
-    "migration:revert": "yarn typeorm migration:revert -d src/database/data-source.ts"
+    "dev": "ts-node-dev --transpile-only src/index.ts",
+    "typeorm": "ts-node-dev node_modules/typeorm/cli.js -d src/database/data-source.ts"
   },
   "dependencies": {
     "dotenv": "^17.1.0",

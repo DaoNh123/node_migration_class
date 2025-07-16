@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import { getRepository } from "typeorm";
+// import { AppDataSource.getRepository } from "typeorm";
 import { Student } from "../entities/Student";
 import { Teacher } from "../entities/Teacher";
+import { AppDataSource } from "../database/data-source";
 
 class StudentController {
   async index(request: Request, response: Response) {
-    const repository = getRepository(Student);
+    const repository = AppDataSource.getRepository(Student);
     const students = await repository.find({
       relations: ["teacher"],
     });
@@ -15,7 +16,7 @@ class StudentController {
 
   async find(request: Request, response: Response) {
     const { id } = request.params;
-    const repository = getRepository(Student);
+    const repository = AppDataSource.getRepository(Student);
     const student = await repository.findOne({
       where: { id: Number(id) },
     });
@@ -27,9 +28,9 @@ class StudentController {
   }
 
   async create(request: Request, response: Response) {
-    const { class_name, teacher_id } = request.body;
-    const studentRepository = getRepository(Student);
-    const teacherRepository = getRepository(Teacher);
+    const { name, class_name, teacher_id } = request.body;
+    const studentRepository = AppDataSource.getRepository(Student);
+    const teacherRepository = AppDataSource.getRepository(Teacher);
 
     if (!class_name)
       return response
@@ -44,8 +45,7 @@ class StudentController {
 
     const teacher = await teacherRepository.findOne(teacher_id);
 
-    const student = new Student(class_name, teacher);
-    new Student(class_name, teacher);
+    const student = new Student(name, class_name, teacher);
     // const student = studentRepository.create({ class_name, teacher_id });
 
     await studentRepository.save(student);
@@ -56,7 +56,7 @@ class StudentController {
   async update(request: Request, response: Response) {
     const { id } = request.params;
     const { class_name } = request.body;
-    const repository = getRepository(Student);
+    const repository = AppDataSource.getRepository(Student);
     const student = await repository.findOne({
       where: { id: Number(id) },
     });
@@ -78,7 +78,7 @@ class StudentController {
 
   async delete(request: Request, response: Response) {
     const { id } = request.params;
-    const repository = getRepository(Student);
+    const repository = AppDataSource.getRepository(Student);
 
     if (
       !(await repository.findOne({

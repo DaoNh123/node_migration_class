@@ -30,6 +30,12 @@ class Teacher {
 
   @OneToMany(() => Student, (student) => student.teacher)
   students: Student[];
+
+  constructor(name: string, email: string, phoneNumber: string) {
+    this.name = name;
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+  }
 }
 
 export { Teacher };

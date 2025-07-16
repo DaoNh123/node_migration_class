@@ -13,6 +13,6 @@ export const AppDataSource = new DataSource({
   database: process.env.TYPEORM_DATABASE,
   synchronize: false,
   logging: false,
-  entities: ["src/entities/*.ts"],
-  migrations: ["src/migration/*.ts"],
+  entities: ["src/entities/**/*.ts"],
+  migrations: ["src/database/migration/**/*.ts"],
 });

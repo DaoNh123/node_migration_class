@@ -15,10 +15,13 @@ class Student {
   id: number;
 
   @Column()
-  class_name: string;
+  name: string;
 
   @Column()
-  teacher_id: number;
+  class_name: string;
+
+  // @Column()
+  // teacher_id: number;
 
   @ManyToOne(() => Teacher)
   @JoinColumn({ name: "teacher_id" })
@@ -30,7 +33,8 @@ class Student {
   @UpdateDateColumn()
   updated_at: Date;
 
-  constructor(class_name: string, teacher: Teacher) {
+  constructor(name: string, class_name: string, teacher: Teacher) {
+    this.name = name;
     this.class_name = class_name;
     this.teacher = teacher;
   }
